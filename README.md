@@ -226,4 +226,4 @@ Beiträge sind herzlich willkommen! Wenn Sie den Crawler verbessern, die Benutze
 
 ## 📄 Lizenz
 
-Veröffentlicht unter der MIT-Lizenz. Siehe `LICENSE` in den Unterverzeichnissen für Details.
+Dieses Projekt ist unter der MIT-Lizenz veröffentlicht. Siehe [LICENSE](LICENSE) für Details.
