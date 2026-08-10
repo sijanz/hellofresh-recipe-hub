@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HelloFresh Recipe Hub & Einkaufsliste</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+  <!-- Header Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="logo-icon">🥗</div>
+        <div>
+          <h1>HelloFresh Hub</h1>
+          <p class="subtitle">Rezepte durchsuchen & Einkaufslisten erstellen</p>
+        </div>
+      </div>
+      <div class="nav-controls">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Rezepte oder Zutaten suchen...">
+          <button id="clearSearch" class="btn-icon hidden">✕</button>
+        </div>
+        <div class="stats-badge" id="recipeCountBadge">0 Rezepte</div>
+        <button id="themeToggle" class="btn-theme" title="Farbschema wechseln">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="main-workspace">
+    <!-- Recipe Catalog Grid -->
+    <section class="catalog-container">
+      <div id="recipeGrid" class="recipe-grid">
+        <!-- Recipe cards rendered dynamically -->
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Lade Rezepte...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Sidebar Container -->
+    <aside class="right-sidebar">
+      <!-- Selection Drawer Tile -->
+      <div id="selectionDrawer" class="selection-drawer">
+        <div class="drawer-header">
+          <h3><span class="badge-count" id="drawerCount">0</span> Ausgewählte Rezepte</h3>
+          <button id="clearSelectionBtn" class="btn-link">Auswahl leeren</button>
+        </div>
+
+        <div id="drawerList" class="drawer-list">
+          <div class="empty-drawer">
+            <p>Wähle Rezepte aus dem Katalog aus, um eine Einkaufsliste zu generieren.</p>
+          </div>
+        </div>
+
+        <div class="drawer-footer">
+          <button id="generateListBtn" class="btn-primary full-width" disabled>
+            ✨ Einkaufsliste generieren
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Tile -->
+      <div id="filterTile" class="filter-tile">
+        <div class="tile-header">
+          <h3>🔍 Filter</h3>
+          <button id="resetTileFiltersBtn" class="btn-link">Zurücksetzen</button>
+        </div>
+
+        <!-- Duration Filter -->
+        <div class="filter-group">
+          <label class="filter-title">⏱️ Max. Dauer:</label>
+          <div class="range-wrap">
+            <input type="range" id="durationRangeInput" min="15" max="90" step="5" value="90">
+            <span id="durationRangeVal" class="range-val">Alle (< 90 M)</span>
+          </div>
+        </div>
+
+        <!-- Difficulty (Stufe) Filter -->
+        <div class="filter-group">
+          <label class="filter-title">⭐ Schwierigkeit (Stufe):</label>
+          <div class="checkbox-group" id="difficultyCheckGroup">
+            <label class="check-item"><input type="checkbox" value="1" checked> Stufe 1 (Einfach)</label>
+            <label class="check-item"><input type="checkbox" value="2" checked> Stufe 2 (Mittel)</label>
+            <label class="check-item"><input type="checkbox" value="3" checked> Stufe 3 (Schwer)</label>
+          </div>
+        </div>
+
+        <!-- Origin / Cuisine Filter -->
+        <div class="filter-group">
+          <label class="filter-title">🌐 Herkunft / Küche:</label>
+          <select id="originSelect" class="portion-select" style="width: 100%; padding: 0.45rem; font-size: 0.85rem;">
+            <option value="all">Alle Herkünfte</option>
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- PDF Filter -->
+        <div class="filter-group" style="margin-top: 0.25rem;">
+          <label class="check-item">
+            <input type="checkbox" id="pdfOnlyCheck"> 📄 Nur Rezepte mit PDF
+          </label>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Recipe Detail Modal -->
+  <div id="recipeModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <button class="modal-close" id="closeRecipeModal">✕</button>
+      <div id="recipeModalContent" class="modal-body">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Shopping List Modal -->
+  <div id="shoppingListModal" class="modal-backdrop hidden">
+    <div class="modal-card large-modal">
+      <div class="modal-header">
+        <h2>🛒 Aggregierte Einkaufsliste</h2>
+        <button class="modal-close" id="closeShoppingListModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="shopping-list-actions">
+          <button id="copyMarkdownBtn" class="btn-secondary">📋 In Zwischenablage kopieren</button>
+          <button id="downloadMarkdownBtn" class="btn-secondary">📥 Als .md herunterladen</button>
+          <button id="openEmailModalBtn" class="btn-primary" style="margin-left: auto;">✉️ Per E-Mail senden</button>
+        </div>
+        <div id="shoppingListContainer" class="shopping-list-view">
+          <!-- Shopping list content rendered dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Modal -->
+  <div id="emailModal" class="modal-backdrop hidden">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2>✉️ Einkaufsliste per E-Mail senden</h2>
+        <button class="modal-close" id="closeEmailModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="emailForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Empfänger
+              E-Mail Adresse:</label>
+            <input type="email" id="emailRecipient" class="search-box" style="width: 100%;" required
+              placeholder="z.B. user@example.com">
+          </div>
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">SMTP / Mail
+              Passwort:</label>
+            <input type="password" id="emailPassword" class="search-box" style="width: 100%;" required
+              placeholder="Dein GMX Passwort eingeben">
+            <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; display: block;">Das
+              Passwort wird verschlüsselt an deinen Server übertragen und nicht gespeichert.</span>
+          </div>
+          <div id="emailStatusMessage" style="font-size: 0.85rem; display: none;"></div>
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.5rem;">
+            <button type="button" class="btn-secondary" id="cancelEmailBtn">Abbrechen</button>
+            <button type="submit" class="btn-primary" id="sendEmailSubmitBtn">📤 Einkaufsliste Senden</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Mobile Selection Trigger -->
+  <button id="mobileDrawerTrigger" class="mobile-floating-btn hidden">
+    🛒 <span id="mobileCountBadge">0</span> Rezepte ausgewählt
+  </button>
+
+  <script src="/static/app.js"></script>
+</body>
+
+</html>
