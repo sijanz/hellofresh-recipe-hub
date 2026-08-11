@@ -40,9 +40,6 @@ Eine durchgängige Full-Stack-Anwendung und CLI-Utility-Suite zum Crawlen von He
   - Unterstützt Regionen/Sprachen: Deutschland (`DE`), USA (`US`), Großbritannien (`GB`), Frankreich (`FR`).
   - Lädt strukturierte JSON-Rezeptdaten und Original-PDF-Rezeptkarten herunter.
 
-- 🐍 **Eigenständiger Web-Scraper**:
-  - Leichtgewichtiges Python-Skript (`create_shopping_list.py` / `hf.py`) mit `BeautifulSoup4` zum direkten Scrapen von Rezepten über eine beliebige HelloFresh-URL ohne vorheriges Crawlen.
-
 ---
 
 ## 📁 Projektstruktur
@@ -50,9 +47,6 @@ Eine durchgängige Full-Stack-Anwendung und CLI-Utility-Suite zum Crawlen von He
 ```
 hf_recipe_to_notes/
 ├── server.py                   # Flask-REST-API-Backend & statischer Dateiserver
-├── create_shopping_list.py     # Eigenständiger Python-Scraper & Tkinter-GUI
-├── hf.py                       # Helper / CLI-Scraping-Skript
-├── tkinter_example.py          # Tkinter-Beispiel-Snippet
 ├── .env.example                # Beispiel-Umgebungskonfigurationsdatei
 ├── .gitignore                  # Git-Ignore-Regeln
 ├── README.md                   # Projektdokumentation (Deutsch)
@@ -104,7 +98,7 @@ source venv/bin/activate
 
 ### 3. Python-Abhängigkeiten installieren
 ```bash
-pip install flask requests beautifulsoup4
+pip install flask
 ```
 
 ### 4. Node.js-Crawler-Abhängigkeiten installieren
@@ -133,29 +127,9 @@ RECIPIENT_EMAIL=ihre_email@gmx.net
 
 ## 🚀 Bedienungsanleitung
 
-### A. Web-Anwendung ausführen (Empfohlen)
+### A. HelloFresh Crawler ausführen (Einmalig vor dem Webapp-Start)
 
-1. Starten Sie den Flask-Backend-Server:
-   ```bash
-   python server.py
-   ```
-2. Öffnen Sie Ihren Webbrowser und rufen Sie folgende Adresse auf:
-   ```
-   http://localhost:5000
-   ```
-3. **Funktionen im Web-Hub**:
-   - Suchen Sie Rezepte nach Name oder Zutat in der Suchleiste.
-   - Nutzen Sie die rechten Filter-Optionen, um maximale Zubereitungszeit, Schwierigkeitsgrad oder Küche einzustellen.
-   - Klicken Sie auf **"+ Auswählen"** auf einer Rezeptkarte, um sie zur Auswahl hinzuzufügen.
-   - Passen Sie die Anzahl der Portionen pro Rezept über die `+` / `-` Buttons an.
-   - Klicken Sie auf **"✨ Einkaufsliste generieren"**, um die aggregierte Liste zu erstellen.
-   - Vorschau der Markdown-Ausgabe anzeigen, in die Zwischenablage kopieren oder auf **"📧 Per E-Mail senden"** klicken, um die Liste an sich selbst zu senden.
-
----
-
-### B. HelloFresh Crawler ausführen
-
-Um frische Rezeptdatenbanken zu crawlen und PDF-Rezeptkarten herunterzuladen:
+Bevor Sie die Web-Anwendung zum ersten Mal starten, müssen Sie den HelloFresh Crawler einmal ausführen, um die Rezeptdaten herunterzuladen:
 
 1. Wechseln Sie in das Crawler-Verzeichnis:
    ```bash
@@ -176,16 +150,32 @@ Um frische Rezeptdatenbanken zu crawlen und PDF-Rezeptkarten herunterzuladen:
    | `--recipeCardSaveDirectory` | `-s` | Speicherpfad für PDFs und JSONs | `./recipe-card-pdfs` | *Pfad-String* |
    | `--noMeat` | `-m` | Landfleisch/Geflügel herausfiltern | `true` | `true` / `false` |
 
+3. Kehren Sie in das Hauptverzeichnis zurück:
+   ```bash
+   cd ..
+   ```
+
 ---
 
-### C. Eigenständige Scraper-Skripte ausführen
+### B. Web-Anwendung ausführen
 
-Wenn Sie Zutaten direkt aus HelloFresh-Rezeptlinks extrahieren möchten, ohne den Webserver zu starten:
+Nachdem die Rezeptdaten gecrawlt wurden, können Sie das Web-Dashboard starten:
 
-```bash
-python create_shopping_list.py
-```
-Dieses Skript ruft die angegebenen URLs ab, parst die Zutatenmengen mit BeautifulSoup und gibt eine formatierte `shopping_list.md`-Datei aus.
+1. Starten Sie den Flask-Backend-Server:
+   ```bash
+   python server.py
+   ```
+2. Öffnen Sie Ihren Webbrowser und rufen Sie folgende Adresse auf:
+   ```
+   http://localhost:5000
+   ```
+3. **Funktionen im Web-Hub**:
+   - Suchen Sie Rezepte nach Name oder Zutat in der Suchleiste.
+   - Nutzen Sie die rechten Filter-Optionen, um maximale Zubereitungszeit, Schwierigkeitsgrad oder Küche einzustellen.
+   - Klicken Sie auf **"+ Auswählen"** auf einer Rezeptkarte, um sie zur Auswahl hinzuzufügen.
+   - Passen Sie die Anzahl der Portionen pro Rezept über die `+` / `-` Buttons an.
+   - Klicken Sie auf **"✨ Einkaufsliste generieren"**, um die aggregierte Liste zu erstellen.
+   - Vorschau der Markdown-Ausgabe anzeigen, in die Zwischenablage kopieren oder auf **"📧 Per E-Mail senden"** klicken, um die Liste an sich selbst zu senden.
 
 ---
 
